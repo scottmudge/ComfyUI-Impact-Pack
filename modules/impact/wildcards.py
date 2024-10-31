@@ -8,6 +8,7 @@ import numpy as np
 import threading
 from impact import utils
 from impact import config
+from hashlib import sha256
 
 
 wildcards_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "wildcards"))
@@ -15,7 +16,10 @@ wildcards_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "
 RE_WildCardQuantifier = re.compile(r"(?P<quantifier>\d+)#__(?P<keyword>[\w.\-+/*\\]+?)__", re.IGNORECASE)
 wildcard_lock = threading.Lock()
 wildcard_dict = {}
+lora_cache = {}
 
+def hash_lora(lora_name, model_weight, clip_weight, lbw, lbw_a, lbw_b) -> str:
+    return sha256(f"{lora_name}:{model_weight}:{clip_weight}:{lbw}:{lbw_a}:{lbw_b}".encode()).hexdigest()
 
 def get_wildcard_list():
     with wildcard_lock:
@@ -372,7 +376,7 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None, seed=None, 
             path = None
 
         if path is not None:
-            print(f"LOAD LORA: {lora_name}: {model_weight}, {clip_weight}, LBW={lbw}, A={lbw_a}, B={lbw_b}")
+            # print(f"LOAD LORA: {lora_name}: {model_weight}, {clip_weight}, LBW={lbw}, A={lbw_a}, B={lbw_b}")
 
             def default_lora():
                 return nodes.LoraLoader().load_lora(model, clip, lora_name, model_weight, clip_weight)
@@ -399,8 +403,8 @@ def process_with_loras(wildcard_opt, model, clip, clip_encoder=None, seed=None, 
     if len(pass3) == 0:
         pass3 = ['']
 
-    pass3_str = [f'[{x}]' for x in pass3]
-    print(f"CLIP: {str.join(' + ', pass3_str)}")
+    # pass3_str = [f'[{x}]' for x in pass3]
+    # print(f"CLIP: {str.join(' + ', pass3_str)}")
 
     result = None
 

@@ -2154,6 +2154,7 @@ class ImpactWildcardProcessor:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
+                        "Select to add Embedding": (["Select the Embedding to add to the text"] + folder_paths.get_filename_list("embeddings"),),
                         "Select to add Wildcard": (["Select the Wildcard to add to the text"],),
                     },
                 }
@@ -2182,6 +2183,7 @@ class ImpactWildcardEncode:
                         "populated_text": ("STRING", {"multiline": True, "dynamicPrompts": False}),
                         "mode": ("BOOLEAN", {"default": True, "label_on": "Populate", "label_off": "Fixed"}),
                         "Select to add LoRA": (["Select the LoRA to add to the text"] + folder_paths.get_filename_list("loras"), ),
+                        "Select to add Embedding": (["Select the Embedding to add to the text"] + folder_paths.get_filename_list("embeddings"), ),
                         "Select to add Wildcard": (["Select the Wildcard to add to the text"], ),
                         "seed": ("INT", {"default": 0, "min": 0, "max": 0xffffffffffffffff}),
                     },

@@ -469,8 +469,12 @@ def onprompt_populate_wildcards(json_data):
                             input_seed = int(input_node['inputs']['seed'])
                             if not isinstance(input_seed, int):
                                 continue
+                        if input_node['class_type'] == 'Seed Generator (Image Saver)':
+                            input_seed = int(input_node['inputs']['seed'])
+                            if not isinstance(input_seed, int):
+                                continue
                         else:
-                            print(f"[Impact Pack] Only `ImpactInt`, `Seed (rgthree)` and `Primitive` Node are allowed as the seed for '{v['class_type']}'. It will be ignored. ")
+                            print(f"[Impact Pack] Only `ImpactInt`, `Seed (rgthree)` and `Primitive` Node are allowed as the seed for '{v['class_type']}'. It will be ignored. {str(input_node['class_type'])}, {str(input_node['inputs'])}")
                             continue
                     except:
                         continue

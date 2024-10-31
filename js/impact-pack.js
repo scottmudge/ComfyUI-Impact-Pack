@@ -638,11 +638,13 @@ app.registerExtension({
 		|| node.comfyClass == "EditDetailerPipe" || node.comfyClass == "EditDetailerPipeSDXL"
 		|| node.comfyClass == "BasicPipeToDetailerPipe" || node.comfyClass == "BasicPipeToDetailerPipeSDXL") {
 			node._value = "Select the LoRA to add to the text";
+			node._evalue = "Select the Embedding to add to the text";
 			node._wvalue = "Select the Wildcard to add to the text";
 
 			var tbox_id = 0;
 			var combo_id = 3;
 			var has_lora = true;
+			var has_embedding = true;
 
 			switch(node.comfyClass){
 				case "ImpactWildcardEncode":
@@ -667,7 +669,7 @@ app.registerExtension({
 					break;
 			}
 
-			Object.defineProperty(node.widgets[combo_id+1], "value", {
+			Object.defineProperty(node.widgets[combo_id+2], "value", {
 				set: (value) => {
 						const stackTrace = new Error().stack;
 						if(stackTrace.includes('inner_value_change')) {
@@ -682,7 +684,7 @@ app.registerExtension({
 				get: () => { return "Select the Wildcard to add to the text"; }
 			});
 
-			Object.defineProperty(node.widgets[combo_id+1].options, "values", {
+			Object.defineProperty(node.widgets[combo_id+2].options, "values", {
 				set: (x) => {},
 				get: () => {
 					return wildcards_list;
@@ -714,11 +716,40 @@ app.registerExtension({
 				});
 			}
 
+			
+			if(has_embedding) {
+				Object.defineProperty(node.widgets[combo_id+1], "value", {
+					set: (value) => {
+							const stackTrace = new Error().stack;
+							if(stackTrace.includes('inner_value_change')) {
+								if(value != "Select the Embedding to add to the text") {
+									let embedding_name = value;
+									if (embedding_name.endsWith('.pt') || embedding_name.endsWith('.safetensors')) {
+										embedding_name = embedding_name.slice(0, embedding_name.lastIndexOf('.'));
+									}
+
+									node.widgets[tbox_id].value += `embedding:${embedding_name}`;
+									if(node.widgets_values) {
+										node.widgets_values[tbox_id] = node.widgets[tbox_id].value;
+									}
+								}
+							}
+
+							node._evalue = value;
+						},
+
+					get: () => { return "Select the Embedding to add to the text"; }
+				});
+			}
+
 			// Preventing validation errors from occurring in any situation.
 			if(has_lora) {
 				node.widgets[combo_id].serializeValue = () => { return "Select the LoRA to add to the text"; }
 			}
-			node.widgets[combo_id+1].serializeValue = () => { return "Select the Wildcard to add to the text"; }
+			if(has_embedding) {
+				node.widgets[combo_id+1].serializeValue = () => { return "Select the Embedding to add to the text"; }
+			}
+			node.widgets[combo_id+2].serializeValue = () => { return "Select the Wildcard to add to the text"; }
 		}
 
 		if(node.comfyClass == "ImpactWildcardProcessor" || node.comfyClass == "ImpactWildcardEncode") {
